@@ -40,6 +40,7 @@ namespace ChatBot
             else if (context.Activity.Type == ActivityTypes.ConversationUpdate && context.Activity.MembersAdded.FirstOrDefault()?.Id == context.Activity.Recipient.Id)
             {
                 var msg = "Hi! I'm a restaurant assistant bot. I can help you with your reservation.";
+
                 await context.SendActivity(msg);
             }
         }
