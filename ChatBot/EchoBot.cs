@@ -10,6 +10,7 @@ using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Extensions.Options;
 using ChatBot.Models;
 using ChatBot.Services;
+using Microsoft.Bot.Builder.Ai.LUIS;
 
 namespace ChatBot
 {
@@ -29,13 +30,29 @@ namespace ChatBot
             if (context.Activity.Type == ActivityTypes.Message)
             {
                 // Get the conversation state from the turn context
-                var state = context.GetConversationState<EchoState>();
+                // var state = context.GetConversationState<EchoState>();
 
                 // Bump the turn count. 
-                state.TurnCount++;
+                // state.TurnCount++;
 
                 // Echo back to the user whatever they typed.
-                await context.SendActivity($"Turn {state.TurnCount}: You sent '{context.Activity.Text}'");
+                // await context.SendActivity($"Turn {state.TurnCount}: You sent '{context.Activity.Text}'");
+
+                if (!context.Responded)
+                {
+                    var result = context.Services.Get<RecognizerResult>(LuisRecognizerMiddleware.LuisRecognizerResultKey);
+                    var topIntent = result?.GetTopScoringIntent();
+
+                    switch (topIntent != null ? topIntent.Value.intent : null)
+                    {
+                        case "TodaysSpecialty":
+                            await context.SendActivity($"For today we have the following options: {string.Join(", ", BotConstants.Specialties)}");
+                            break;
+                        default:
+                            await context.SendActivity("Sorry, I didn't understand that.");
+                            break;
+                    }
+                }
             }
             else if (context.Activity.Type == ActivityTypes.ConversationUpdate && context.Activity.MembersAdded.FirstOrDefault()?.Id == context.Activity.Recipient.Id)
             {

@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ChatBot.Models;
 using ChatBot.TranslatorSpeech;
+using Microsoft.Bot.Builder.Ai.LUIS;
 
 namespace ChatBot
 {
@@ -67,6 +68,14 @@ namespace ChatBot
                 // IStorage dataStore = new Microsoft.Bot.Builder.Azure.AzureBlobStorage("AzureBlobConnectionString", "containerName");
 
                 options.Middleware.Add(new ConversationState<ReservationData>(dataStore));
+
+                options.Middleware.Add(
+                    new LuisRecognizerMiddleware(
+                        new LuisModel(
+                            "4adea331-84bb-4846-90c4-0da9d0ade97f",
+                            "728ad4d3a2444b2dbbd68219806099ac",
+                            new Uri("https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/")) 
+                ));
             });
         }
 
