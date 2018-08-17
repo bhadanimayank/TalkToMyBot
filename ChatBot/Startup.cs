@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using ChatBot.Models;
 using ChatBot.TranslatorSpeech;
 using Microsoft.Bot.Builder.Ai.LUIS;
+using Microsoft.Bot.Builder.Ai.QnA;
 
 namespace ChatBot
 {
@@ -76,6 +77,20 @@ namespace ChatBot
                             "728ad4d3a2444b2dbbd68219806099ac",
                             new Uri("https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/")) 
                 ));
+
+                options.Middleware.Add(
+                    new QnAMakerMiddleware(
+                        new QnAMakerEndpoint{
+                            Host = "https://qna-ttmb-mb.azurewebsites.net/qnamaker",
+                            EndpointKey = "6ba6353b-3efc-41f6-bc69-faa8a5d01e63",
+                            KnowledgeBaseId = "237d09c8-b669-4d53-994d-9325142a7255"
+                        },
+
+                        new QnAMakerMiddlewareOptions{
+                            EndActivityRoutingOnAnswer = true,
+                            ScoreThreshold = 0.9f
+                        }
+                        ));
             });
         }
 
