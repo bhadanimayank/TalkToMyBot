@@ -70,7 +70,9 @@ namespace ChatBot
                 // IStorage dataStore = new Microsoft.Bot.Builder.Azure.AzureTableStorage("AzureTablesConnectionString", "TableName");
                 // IStorage dataStore = new Microsoft.Bot.Builder.Azure.AzureBlobStorage("AzureBlobConnectionString", "containerName");
 
-                options.Middleware.Add(new ConversationState<ReservationData>(dataStore));
+                options.Middleware.Add(
+                    new ConversationState<ReservationData>(dataStore
+                ));
 
                 options.Middleware.Add(
                     new LuisRecognizerMiddleware(
@@ -94,7 +96,6 @@ namespace ChatBot
                         }
                  ));
 
-                
                 options.Middleware.Add(
                     new PersonalityChatMiddleware(
                         new PersonalityChatMiddlewareOptions(

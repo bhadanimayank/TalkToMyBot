@@ -30,6 +30,8 @@ namespace ChatBot
         /// <param name="context">Turn scoped context containing all the data needed
         /// for processing this conversation turn. </param>        
 
+        private readonly TextToSpeechService _ttsService;
+
         private readonly DialogSet _dialogs;
 
         public EchoBot(IOptions<MySettings> config)
@@ -40,6 +42,8 @@ namespace ChatBot
             _dialogs.Add(PromptStep.NamePrompt, new TextPrompt());
             _dialogs.Add(PromptStep.ConfirmationPrompt, new ConfirmPrompt(Culture.English));
             _dialogs.Add(PromptStep.GatherInfo, new WaterfallStep[] { TimeStep, AmountPeopleStep, NameStep, ConfirmationStep, FinalStep });
+
+            _ttsService = new TextToSpeechService(config.Value.VoiceFontName, config.Value.VoiceFontLanguage);
         }
 
         public async Task OnTurn(ITurnContext context)
@@ -87,8 +91,7 @@ namespace ChatBot
             else if (context.Activity.Type == ActivityTypes.ConversationUpdate && context.Activity.MembersAdded.FirstOrDefault()?.Id == context.Activity.Recipient.Id)
             {
                 var msg = "Hi! I'm a restaurant assistant bot. I can help you with your reservation.";
-
-                await context.SendActivity(msg);
+                await context.SendActivity(msg, _ttsService.GenerateSsml(msg, BotConstants.EnglishLanguage));
             }
         }
 
@@ -151,7 +154,7 @@ namespace ChatBot
             if (string.IsNullOrEmpty(state.Time))
             {
                 var msg = "When do you need the reservation?";
-                await dialogContext.Prompt(PromptStep.TimePrompt, msg);
+                await dialogContext.Prompt(PromptStep.TimePrompt, msg, new PromptOptions { Speak = _ttsService.GenerateSsml(msg, BotConstants.EnglishLanguage) });
             }
             else
             {
@@ -172,7 +175,7 @@ namespace ChatBot
             if (state.AmountPeople == null)
             {
                 var msg = "How many people will you need reservation for?";
-                await dialogContext.Prompt(PromptStep.AmountPeoplePrompt, msg);
+                await dialogContext.Prompt(PromptStep.AmountPeoplePrompt, msg, new PromptOptions { Speak = _ttsService.GenerateSsml(msg, BotConstants.EnglishLanguage) });
             }
             else
             {
@@ -194,7 +197,7 @@ namespace ChatBot
             if (state.AmountPeople != null)
             {
                 var msg = "And the name on the reseravtion?";
-                await dialogContext.Prompt(PromptStep.NamePrompt, msg);
+                await dialogContext.Prompt(PromptStep.NamePrompt, msg, new PromptOptions { Speak = _ttsService.GenerateSsml(msg, BotConstants.EnglishLanguage) });
             }
             else
             {
@@ -220,8 +223,11 @@ namespace ChatBot
                 await dialogContext.Prompt(
                     PromptStep.ConfirmationPrompt,
                     msg,
-                    new PromptOptions {
-                        RetryPromptString = retryMsg
+                    new PromptOptions
+                    {
+                        Speak = _ttsService.GenerateSsml(msg, BotConstants.EnglishLanguage),
+                        RetryPromptString = retryMsg,
+                        RetrySpeak = _ttsService.GenerateSsml(retryMsg, BotConstants.EnglishLanguage)
                     });
             }
             else
@@ -247,7 +253,7 @@ namespace ChatBot
                     msg = "Thanks for using the Contoso Assistance. See you soon!";
                 }
 
-                await dialogContext.Context.SendActivity(msg);
+                await dialogContext.Context.SendActivity(msg, _ttsService.GenerateSsml(msg, BotConstants.EnglishLanguage));
             }
 
             await dialogContext.End(state);
