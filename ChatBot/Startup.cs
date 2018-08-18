@@ -12,6 +12,8 @@ using ChatBot.Models;
 using ChatBot.TranslatorSpeech;
 using Microsoft.Bot.Builder.Ai.LUIS;
 using Microsoft.Bot.Builder.Ai.QnA;
+using Microsoft.Bot.Builder.PersonalityChat;
+using Microsoft.Bot.Builder.PersonalityChat.Core;
 
 namespace ChatBot
 {
@@ -90,7 +92,16 @@ namespace ChatBot
                             EndActivityRoutingOnAnswer = true,
                             ScoreThreshold = 0.9f
                         }
-                        ));
+                 ));
+
+                
+                options.Middleware.Add(
+                    new PersonalityChatMiddleware(
+                        new PersonalityChatMiddlewareOptions(
+                            respondOnlyIfChat: true,
+                            scoreThreshold: 0.5F,
+                            botPersona: PersonalityChatPersona.Humorous)
+                 ));
             });
         }
 
