@@ -75,6 +75,14 @@ namespace ChatBot
                 ));
 
                 options.Middleware.Add(
+                    new TranslatorSpeechMiddleware(
+                        Configuration["TranslatorSpeechSubscriptionKey"],
+                        Configuration["TranslatorTextSubscriptionKey"],
+                        Configuration["VoiceFontName"],
+                        Configuration["VoiceFontLanguage"]
+                ));
+
+                options.Middleware.Add(
                     new LuisRecognizerMiddleware(
                         new LuisModel(
                             "4adea331-84bb-4846-90c4-0da9d0ade97f",
@@ -82,13 +90,7 @@ namespace ChatBot
                             new Uri("https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/")) 
                 ));
 
-                options.Middleware.Add(
-                    new TranslatorSpeechMiddleware(
-                        Configuration["TranslatorSpeechSubscriptionKey"],
-                        Configuration["TranslatorTextSubscriptionKey"],
-                        Configuration["VoiceFontName"],
-                        Configuration["VoiceFontLanguage"]
-                ));
+                
 
                 options.Middleware.Add(
                     new QnAMakerMiddleware(
