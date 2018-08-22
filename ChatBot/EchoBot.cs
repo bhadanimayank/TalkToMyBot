@@ -82,6 +82,10 @@ namespace ChatBot
                             ReservationHandler(dialogContext, amountPeople, time);
                             break;
 
+                        case "GetDiscounts":
+                            await GetDiscountsHandler(context);
+                            break;
+
                         default:
                             await context.SendActivity("Sorry, I didn't understand that.");
                             break;
@@ -257,6 +261,13 @@ namespace ChatBot
             }
 
             await dialogContext.End(state);
+        }
+
+        private async Task GetDiscountsHandler(ITurnContext context)
+        {
+            var msg = "This week we have a 25% discount in all of our wine selection";
+
+            await context.SendActivity(msg);
         }
 
     }

@@ -83,6 +83,14 @@ namespace ChatBot
                 ));
 
                 options.Middleware.Add(
+                    new TranslatorSpeechMiddleware(
+                        Configuration["TranslatorSpeechSubscriptionKey"],
+                        Configuration["TranslatorTextSubscriptionKey"],
+                        Configuration["VoiceFontName"],
+                        Configuration["VoiceFontLanguage"]
+                ));
+
+                options.Middleware.Add(
                     new QnAMakerMiddleware(
                         new QnAMakerEndpoint{
                             Host = "https://qna-ttmb-mb.azurewebsites.net/qnamaker",
